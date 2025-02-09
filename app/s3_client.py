@@ -9,7 +9,7 @@ async def upload_log(content: str, application_name: str) -> str:
     Загружает содержимое лога в S3 и возвращает сгенерированный ключ.
     """
     key = f"logs/{application_name}/{uuid.uuid4()}.log"
-    async with get_session().client(
+    async with get_session().create_client(
         "s3",
         endpoint_url=f"https://{settings.S3_HOST}",
         region_name=settings.S3_REGION,
