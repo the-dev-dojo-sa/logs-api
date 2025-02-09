@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Конфигурация для S3
+    S3_HOST: str
     S3_BUCKET: str
     S3_ACCESS_KEY: str
     S3_SECRET_KEY: str
