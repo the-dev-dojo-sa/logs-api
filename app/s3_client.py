@@ -1,5 +1,5 @@
 # app/s3_client.py
-import aioboto3
+from aiobotocore.session import get_session
 import uuid
 from .config import settings
 
@@ -9,8 +9,7 @@ async def upload_log(content: str, application_name: str) -> str:
     Загружает содержимое лога в S3 и возвращает сгенерированный ключ.
     """
     key = f"logs/{application_name}/{uuid.uuid4()}.log"
-    session = aioboto3.Session()
-    async with session.client(
+    async with get_session().client(
         "s3",
         endpoint_url=f"https://{settings.S3_HOST}",
         region_name=settings.S3_REGION,
