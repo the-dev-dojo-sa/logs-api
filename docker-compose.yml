@@ -3,6 +3,7 @@ version: '3.8'
 services:
   logs-api:
     build: .
+    pull_policy: build
     container_name: logs-api
     env_file: stack.env
     environment:
