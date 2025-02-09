@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+aioboto3
+SQLAlchemy>=1.4
+asyncpg
+pydantic
+httpx

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  logs-api:
+    build: .
+    container_name: logs-api
+    env_file: stack.env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@logs-db:5432/logs_db
+    depends_on:
+      - logs-db
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.logs-api.entrypoints=websecure
+      - traefik.http.routers.logs-api.rule=Host(`logs-api.nachert.art`)
+    networks:
+      - proxy
+      - monitoring
+
+  logs-db:
+    image: postgres:13
+    container_name: logs-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: logs_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - monitoring
+
+volumes:
+  postgres_data:
+
+networks:
+  proxy:
+    external: true
+  monitoring:
+    external: true
