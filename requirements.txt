@@ -4,4 +4,5 @@ aioboto3
 SQLAlchemy>=1.4
 asyncpg
 pydantic
+pydantic-settings
 httpx
