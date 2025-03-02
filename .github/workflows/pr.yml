@@ -21,7 +21,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install g4f
-        run: pip install g4f
+        run: pip install g4f[all]
 
       - name: Start g4f API
         run: |
