@@ -37,10 +37,10 @@ jobs:
           MODEL: "gpt-4o-mini"
           REVIEW_LANGUAGE: "English"
 
-      - name: Stop g4f Proxy
-        if: always()
-        run: docker stop g4f-proxy || true
-
       - name: Show g4f logs if it fails
         if: failure()
         run: docker logs g4f-proxy
+
+      - name: Stop g4f Proxy
+        if: always()
+        run: docker stop g4f-proxy || true
