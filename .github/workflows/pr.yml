@@ -15,10 +15,10 @@ jobs:
 
       - name: Start g4f Proxy
         run: |
-          docker run -d --rm --name g4f-proxy -p 1337:1337 hlohaus789/g4f
+          docker run -d --rm --name g4f-proxy -p 8080:8080 hlohaus789/g4f
           echo "Waiting for g4f to be available..."
           for i in {1..10}; do
-            if curl -s http://localhost:1337/v1/models | grep -q "gpt"; then
+            if curl -s http://localhost:8080/v1/models | grep -q "gpt"; then
               echo "g4f is ready!"
               exit 0
             fi
@@ -33,7 +33,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: "dummy-key"
-          OPENAI_BASE_URL: "http://localhost:1337/v1"
+          OPENAI_BASE_URL: "http://localhost:8080/v1"
           MODEL: "gpt-4o-mini"
           REVIEW_LANGUAGE: "English"
 
