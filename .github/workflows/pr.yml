@@ -4,17 +4,19 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions: write-all
+
 jobs:
-  check_reaction:
+  code_review:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Start g4f Proxy
+      - name: Start g4f
         run: |
           docker run -d --rm --name g4f-proxy -p 8080:8080 hlohaus789/g4f
           echo "Waiting for g4f to be available..."
@@ -29,7 +31,7 @@ jobs:
           echo "g4f did not start in time!"
           exit 1
 
-      - name: Run Code Review GPT (via g4f Proxy)
+      - name: Run Code Review
         uses: mattzcarey/code-review-gpt@v0.8.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,6 +43,6 @@ jobs:
       - name: Show g4f logs
         run: docker logs g4f-proxy
 
-      - name: Stop g4f Proxy
+      - name: Stop g4f
         if: always()
         run: docker stop g4f-proxy || true
