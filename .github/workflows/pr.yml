@@ -1,0 +1,42 @@
+name: Code Review by GPT
+
+on:
+  push:
+
+jobs:
+  check_reaction:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Start g4f Proxy
+        run: |
+          docker run -d --rm --name g4f-proxy -p 1337:1337 hlohaus789/g4f
+          echo "Waiting for g4f to be available..."
+          for i in {1..10}; do
+            if curl -s http://localhost:1337/v1/models | grep -q "gpt"; then
+              echo "g4f is ready!"
+              exit 0
+            fi
+            echo "Retrying in 3 seconds..."
+            sleep 3
+          done
+          echo "g4f did not start in time!"
+          exit 1
+
+      - name: Run Code Review GPT (via g4f Proxy)
+        uses: mattzcarey/code-review-gpt@v0.1.11
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: "dummy-key"
+          OPENAI_BASE_URL: "http://localhost:1337/v1"
+          MODEL: "gpt-4o-mini"
+          REVIEW_LANGUAGE: "English"
+
+      - name: Stop g4f Proxy
+        if: always()
+        run: docker stop g4f-proxy || true
