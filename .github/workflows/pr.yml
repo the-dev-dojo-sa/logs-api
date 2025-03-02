@@ -1,0 +1,61 @@
+name: Code Review by GPT
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions: write-all
+
+jobs:
+  code_review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install g4f
+        run: pip install g4f[all]
+
+      - name: Start g4f API
+        run: |
+          screen -dmS g4f g4f api
+          echo "Waiting for g4f to be available..."
+          for i in {1..10}; do
+            if curl -s http://localhost:1337/v1/models | grep -q "gpt"; then
+              echo "g4f is ready!"
+              exit 0
+            fi
+            echo "Retrying in 3 seconds..."
+            sleep 3
+          done
+          echo "g4f did not start in time!"
+          exit 1
+
+      - uses: anc95/ChatGPT-CodeReview@v1.0.11
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: "dummy-key"
+          LANGUAGE: "Russian"
+          OPENAI_API_ENDPOINT: http://localhost:1337/v1
+          MODEL: gpt-4o-mini
+          PROMPT: "You are an experienced Python developer and your job is to review pull requests. Please review the following code for any misunderstandings or violations. Don't spend time commenting on what is already working perfectly. I'm looking for constructive criticism and suggestions for improving the code, only useful and thorough notes."
+
+      - name: Run Code Review
+        uses: mattzcarey/code-review-gpt@v0.8.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: "dummy-key"
+          OPENAI_BASE_URL: "http://localhost:1337/v1"
+          MODEL: "gpt-4o-mini"
+          REVIEW_LANGUAGE: "English"
+
+      - name: Stop g4f
+        if: always()
+        run: screen -X -S g4f quit
