@@ -25,7 +25,7 @@ jobs:
 
       - name: Start g4f API
         run: |
-          g4f api
+          screen -dmS g4f g4f api
           echo "Waiting for g4f to be available..."
           for i in {1..10}; do
             if curl -s http://localhost:1337/v1/models | grep -q "gpt"; then
@@ -56,9 +56,6 @@ jobs:
           MODEL: "gpt-4o-mini"
           REVIEW_LANGUAGE: "English"
 
-      - name: Show g4f logs
-        run: docker logs g4f-proxy
-
       - name: Stop g4f
         if: always()
-        run: docker stop g4f-proxy || true
+        run: screen -X -S g4f quit
