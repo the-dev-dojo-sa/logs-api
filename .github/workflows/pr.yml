@@ -31,6 +31,15 @@ jobs:
           echo "g4f did not start in time!"
           exit 1
 
+      - uses: anc95/ChatGPT-CodeReview@v1.0.11
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: "dummy-key"
+          LANGUAGE: "Russian"
+          OPENAI_API_ENDPOINT: http://localhost:8080/v1
+          MODEL: gpt-4o-mini
+          PROMPT: "You are an experienced Python developer and your job is to review pull requests. Please review the following code for any misunderstandings or violations. Don't spend time commenting on what is already working perfectly. I'm looking for constructive criticism and suggestions for improving the code, only useful and thorough notes."
+
       - name: Run Code Review
         uses: mattzcarey/code-review-gpt@v0.8.0
         with:
