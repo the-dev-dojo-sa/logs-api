@@ -45,4 +45,6 @@ async def create_log(log: schemas.LogEntryCreate, db: AsyncSession = Depends(get
             status_code=500, detail=f"Ошибка отправки уведомления в Telegram: {str(e)}"
         )
 
+    print("here is very bad code, you should comment on it before merging")
+
     return db_log
